@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Ubuntu 扩展 LVM 根目录的方法 | 洋子的自留地</title>
+    <meta name="generator" content="VuePress 1.9.10">
+    <link rel="alternate" type="application/rss+xml" href="https://purocean.github.io/rss.xml" title="洋子的自留地 RSS Feed">
+    <meta name="description" content="最近手头一台运行在 Hyper-V 下面抓数据的服务器 (Ubuntu 16.04) 磁盘空间不够了，之前也没有把数据单独放到一个分区，所以只能想办法把根目录给搞大一点。之前没有处理过这样的问题，网上搜了很多资料，现在把拓展方法记录，分享出来。
+建议在操作之前做好备份工作
+
+步骤概览
+调大物理磁盘
+确定要操作的磁盘
+扩展 LVM 逻辑分区所在的物理拓展分区
+新 ...">
+    
+    <link rel="preload" href="/assets/css/0.styles.5ee86e3d.css" as="style"><link rel="preload" href="/assets/js/app.eb9f9003.js" as="script"><link rel="preload" href="/assets/js/4.a919a368.js" as="script"><link rel="preload" href="/assets/js/1.b0bbcc77.js" as="script"><link rel="preload" href="/assets/js/42.b92ed718.js" as="script"><link rel="prefetch" href="/assets/js/11.8d29bb1f.js"><link rel="prefetch" href="/assets/js/12.ebc662de.js"><link rel="prefetch" href="/assets/js/13.ed891f49.js"><link rel="prefetch" href="/assets/js/14.9d2f201d.js"><link rel="prefetch" href="/assets/js/15.54f4a3d9.js"><link rel="prefetch" href="/assets/js/16.846050e5.js"><link rel="prefetch" href="/assets/js/17.c6a2bbc8.js"><link rel="prefetch" href="/assets/js/18.66fb8bc7.js"><link rel="prefetch" href="/assets/js/19.a70e5f6f.js"><link rel="prefetch" href="/assets/js/2.d9736519.js"><link rel="prefetch" href="/assets/js/20.d5dd728f.js"><link rel="prefetch" href="/assets/js/21.3f30521e.js"><link rel="prefetch" href="/assets/js/22.66343f4a.js"><link rel="prefetch" href="/assets/js/23.c176132e.js"><link rel="prefetch" href="/assets/js/24.69166df7.js"><link rel="prefetch" href="/assets/js/25.b5c2c5f1.js"><link rel="prefetch" href="/assets/js/26.a3e36f84.js"><link rel="prefetch" href="/assets/js/27.8ad76597.js"><link rel="prefetch" href="/assets/js/28.2b42ab80.js"><link rel="prefetch" href="/assets/js/29.efaefbb5.js"><link rel="prefetch" href="/assets/js/3.605ef2e9.js"><link rel="prefetch" href="/assets/js/30.955ad667.js"><link rel="prefetch" href="/assets/js/31.064ef281.js"><link rel="prefetch" href="/assets/js/32.5f88d44e.js"><link rel="prefetch" href="/assets/js/33.2fc19e88.js"><link rel="prefetch" href="/assets/js/34.5a0d2a6b.js"><link rel="prefetch" href="/assets/js/35.1b99631d.js"><link rel="prefetch" href="/assets/js/36.c1fb9a25.js"><link rel="prefetch" href="/assets/js/37.7643d68e.js"><link rel="prefetch" href="/assets/js/38.9c71544d.js"><link rel="prefetch" href="/assets/js/39.9b77b86d.js"><link rel="prefetch" href="/assets/js/40.5770bcf5.js"><link rel="prefetch" href="/assets/js/41.04fc2396.js"><link rel="prefetch" href="/assets/js/43.93eeb3e4.js"><link rel="prefetch" href="/assets/js/44.6a23f7e7.js"><link rel="prefetch" href="/assets/js/45.b78c673a.js"><link rel="prefetch" href="/assets/js/46.35027471.js"><link rel="prefetch" href="/assets/js/47.0838f5cd.js"><link rel="prefetch" href="/assets/js/48.2ae7bad5.js"><link rel="prefetch" href="/assets/js/49.23d9b4d7.js"><link rel="prefetch" href="/assets/js/5.1f904404.js"><link rel="prefetch" href="/assets/js/50.10ec8c3f.js"><link rel="prefetch" href="/assets/js/51.415c8ea0.js"><link rel="prefetch" href="/assets/js/52.0a86f5b4.js"><link rel="prefetch" href="/assets/js/53.4d1c72cb.js"><link rel="prefetch" href="/assets/js/54.1af5a13e.js"><link rel="prefetch" href="/assets/js/55.27d5b373.js"><link rel="prefetch" href="/assets/js/6.1aed2db1.js"><link rel="prefetch" href="/assets/js/7.efa58335.js"><link rel="prefetch" href="/assets/js/8.0c59f90a.js"><link rel="prefetch" href="/assets/js/vuejs-paginate.2352b21b.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.5ee86e3d.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div id="vuepress-theme-blog__global-layout"><section id="header-wrapper"><header id="header"><div class="header-wrapper"><div class="title"><a href="/" class="nav-link home-link">洋子的自留地 </a></div> <div class="header-right-wrap"><ul class="nav"><li class="nav-item"><a href="/" class="nav-link">首页</a></li><li class="nav-item"><a href="/tag/" class="nav-link">标签</a></li></ul> <div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <a href="/rss.xml" class="feed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a></div></div></header></section> <div id="mobile-header"><div class="mobile-header-bar"><div class="mobile-header-title"><a href="/" class="nav-link mobile-home-link">洋子的自留地 </a> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></div> <div class="mobile-menu-wrapper"><hr class="menu-divider"> <ul class="mobile-nav"><li class="mobile-nav-item"><a href="/" class="nav-link">首页</a></li><li class="mobile-nav-item"><a href="/tag/" class="nav-link">标签</a></li> <li class="mobile-nav-item"><a href="/rss.xml" class="feed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a></li></ul></div></div></div> <div class="content-wrapper"><div id="vuepress-theme-blog__post-layout"><article itemscope="itemscope" itemtype="https://schema.org/BlogPosting" class="vuepress-blog-theme-content"><header><h1 itemprop="name headline" class="post-title">
+        Ubuntu 扩展 LVM 根目录的方法
+      </h1> <div class="post-meta"><div itemprop="publisher author" itemtype="http://schema.org/Person" itemscope="itemscope" class="post-meta-author"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-navigation"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg> <span itemprop="name">洋子</span> <!----></div> <div class="post-meta-date"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> <time pubdate itemprop="datePublished" datetime="2017-05-22T00:00:00.000Z">
+      2017-05-22
+    </time></div> <ul itemprop="keywords" class="post-meta-tags"><li class="post-tag" data-v-42ccfcd5><a href="/tag/Linux" data-v-42ccfcd5><span data-v-42ccfcd5>Linux</span></a></li></ul></div></header> <div itemprop="articleBody" class="content__default"><p>最近手头一台运行在 Hyper-V 下面抓数据的服务器 (Ubuntu 16.04) 磁盘空间不够了，之前也没有把数据单独放到一个分区，所以只能想办法把根目录给搞大一点。之前没有处理过这样的问题，网上搜了很多资料，现在把拓展方法记录，分享出来。<br> <strong>建议在操作之前做好备份工作</strong></p> <h2 id="步骤概览"><a href="#步骤概览" class="header-anchor">#</a> 步骤概览</h2> <ol><li>调大物理磁盘</li> <li>确定要操作的磁盘</li> <li>扩展 LVM 逻辑分区所在的物理拓展分区</li> <li>新增 LVM 逻辑分区</li> <li>新分区合并到相应 Volumn Group</li> <li>更新文件系统</li></ol> <h1 id="调大物理磁盘"><a href="#调大物理磁盘" class="header-anchor">#</a> 调大物理磁盘</h1> <p>虚拟机关机，然后直接在虚拟机管理里面操作。</p> <p><img alt="调整磁盘大小" data-src="/assets/img/8c9380dd.8c9380dd.png" loading="lazy" class="lazy"><br>
+现在把磁盘从 100G 调整到了 300G</p> <h2 id="确定要操作的磁盘"><a href="#确定要操作的磁盘" class="header-anchor">#</a> 确定要操作的磁盘</h2> <p>先看下磁盘使用情况，运行命令</p> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>root@vm003:~<span class="token comment"># df -h</span>
+Filesystem               Size  Used Avail Use% Mounted on
+udev                     <span class="token number">3</span>.9G     <span class="token number">0</span>  <span class="token number">3</span>.9G   <span class="token number">0</span>% /dev
+tmpfs                    798M  <span class="token number">8</span>.6M  789M   <span class="token number">2</span>% /run
+/dev/mapper/Ubuntu-root   94G   88G  <span class="token number">1</span>.9G  <span class="token number">98</span>% /
+tmpfs                    <span class="token number">3</span>.9G     <span class="token number">0</span>  <span class="token number">3</span>.9G   <span class="token number">0</span>% /dev/shm
+tmpfs                    <span class="token number">5</span>.0M     <span class="token number">0</span>  <span class="token number">5</span>.0M   <span class="token number">0</span>% /run/lock
+tmpfs                    <span class="token number">3</span>.9G     <span class="token number">0</span>  <span class="token number">3</span>.9G   <span class="token number">0</span>% /sys/fs/cgroup
+/dev/sda1                472M  382M   66M  <span class="token number">86</span>% /boot
+tmpfs                    100K     <span class="token number">0</span>  100K   <span class="token number">0</span>% /run/lxcfs/controllers
+tmpfs                    798M     <span class="token number">0</span>  798M   <span class="token number">0</span>% /run/user/0
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br></div></div><p>虽然我们已经把物理磁盘调整到了 300G，但是根目录还是100G的样子，已用 98%</p> <p>运行命令</p> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>root@vm003:~<span class="token comment"># fdisk -l</span>
+Disk /dev/sda: <span class="token number">300</span> GiB, <span class="token number">322122547200</span> bytes, <span class="token number">629145600</span> sectors
+Units: sectors of <span class="token number">1</span> * <span class="token number">512</span> <span class="token operator">=</span> <span class="token number">512</span> bytes
+Sector size <span class="token punctuation">(</span>logical/physical<span class="token punctuation">)</span>: <span class="token number">512</span> bytes / <span class="token number">4096</span> bytes
+I/O size <span class="token punctuation">(</span>minimum/optimal<span class="token punctuation">)</span>: <span class="token number">4096</span> bytes / <span class="token number">4096</span> bytes
+Disklabel type: dos
+Disk identifier: 0xa88f1366
+
+Device     Boot   Start       End   Sectors  Size Id Type
+/dev/sda1  *       <span class="token number">2048</span>    <span class="token number">999423</span>    <span class="token number">997376</span>  487M <span class="token number">83</span> Linux
+/dev/sda2       <span class="token number">1001470</span> <span class="token number">209713151</span> <span class="token number">208711682</span> <span class="token number">99</span>.5G  <span class="token number">5</span> Extended
+/dev/sda5       <span class="token number">1001472</span> <span class="token number">209713151</span> <span class="token number">208711680</span> <span class="token number">99</span>.5G 8e Linux LVM
+
+Partition <span class="token number">2</span> does not start on physical sector boundary.
+
+
+Disk /dev/mapper/Ubuntu-root: <span class="token number">95.5</span> GiB, <span class="token number">102563315712</span> bytes, <span class="token number">200318976</span> sectors
+Units: sectors of <span class="token number">1</span> * <span class="token number">512</span> <span class="token operator">=</span> <span class="token number">512</span> bytes
+Sector size <span class="token punctuation">(</span>logical/physical<span class="token punctuation">)</span>: <span class="token number">512</span> bytes / <span class="token number">4096</span> bytes
+I/O size <span class="token punctuation">(</span>minimum/optimal<span class="token punctuation">)</span>: <span class="token number">4096</span> bytes / <span class="token number">4096</span> bytes
+
+
+Disk /dev/mapper/Ubuntu-swap_1: <span class="token number">4</span> GiB, <span class="token number">4294967296</span> bytes, <span class="token number">8388608</span> sectors
+Units: sectors of <span class="token number">1</span> * <span class="token number">512</span> <span class="token operator">=</span> <span class="token number">512</span> bytes
+Sector size <span class="token punctuation">(</span>logical/physical<span class="token punctuation">)</span>: <span class="token number">512</span> bytes / <span class="token number">4096</span> bytes
+I/O size <span class="token punctuation">(</span>minimum/optimal<span class="token punctuation">)</span>: <span class="token number">4096</span> bytes / <span class="token number">4096</span> bytes
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br><span class="line-number">20</span><br><span class="line-number">21</span><br><span class="line-number">22</span><br><span class="line-number">23</span><br><span class="line-number">24</span><br><span class="line-number">25</span><br><span class="line-number">26</span><br></div></div><p>可以看到 <em>/dev/sda</em> 已经确实被调整到了300GiB，只是系统还没用到。<br>
+也知道了我们要操作 <strong>/dev/sda</strong></p> <h1 id="扩大-lvm-逻辑分区所在的物理分区"><a href="#扩大-lvm-逻辑分区所在的物理分区" class="header-anchor">#</a> 扩大 LVM 逻辑分区所在的物理分区</h1> <p>运行命令</p> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>root@vm003:~<span class="token comment"># parted /dev/sda</span>
+GNU Parted <span class="token number">3.2</span>
+Using /dev/sda
+Welcome to GNU Parted<span class="token operator">!</span> Type <span class="token string">'help'</span> to view a list of commands.
+<span class="token punctuation">(</span>parted<span class="token punctuation">)</span> print <span class="token comment"># 查看分区</span>
+Model: Msft Virtual Disk <span class="token punctuation">(</span>scsi<span class="token punctuation">)</span>
+Disk /dev/sda: 322GB
+Sector size <span class="token punctuation">(</span>logical/physical<span class="token punctuation">)</span>: 512B/4096B
+Partition Table: msdos
+Disk Flags:
+
+Number  Start   End    Size   Type      File system  Flags
+ <span class="token number">1</span>      1049kB  512MB  511MB  primary   ext2         boot
+ <span class="token number">2</span>      513MB   107GB  107GB  extended
+ <span class="token number">5</span>      513MB   107GB  107GB  logical                lvm
+
+<span class="token punctuation">(</span>parted<span class="token punctuation">)</span> resizepart <span class="token number">2</span> <span class="token comment"># 调整 sda2 分区大小</span>
+End?  <span class="token punctuation">[</span>107GB<span class="token punctuation">]</span>? <span class="token parameter variable">-0</span> <span class="token comment"># 直接充满</span>
+<span class="token punctuation">(</span>parted<span class="token punctuation">)</span> print <span class="token comment"># 再次查看</span>
+Model: Msft Virtual Disk <span class="token punctuation">(</span>scsi<span class="token punctuation">)</span>
+Disk /dev/sda: 322GB
+Sector size <span class="token punctuation">(</span>logical/physical<span class="token punctuation">)</span>: 512B/4096B
+Partition Table: msdos
+Disk Flags:
+
+Number  Start   End    Size   Type      File system  Flags
+ <span class="token number">1</span>      1049kB  512MB  511MB  primary   ext2         boot
+ <span class="token number">2</span>      513MB   322GB  322GB  extended
+ <span class="token number">5</span>      513MB   107GB  107GB  logical                lvm
+
+<span class="token punctuation">(</span>parted<span class="token punctuation">)</span> q <span class="token comment"># 完成退出</span>
+Information: You may need to update /etc/fstab.
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br><span class="line-number">20</span><br><span class="line-number">21</span><br><span class="line-number">22</span><br><span class="line-number">23</span><br><span class="line-number">24</span><br><span class="line-number">25</span><br><span class="line-number">26</span><br><span class="line-number">27</span><br><span class="line-number">28</span><br><span class="line-number">29</span><br><span class="line-number">30</span><br><span class="line-number">31</span><br><span class="line-number">32</span><br></div></div><p>现在我们已经把 /dev/sda2 给拓展出来了</p> <h1 id="新增-lvm-逻辑分区"><a href="#新增-lvm-逻辑分区" class="header-anchor">#</a> 新增 LVM 逻辑分区</h1> <p>运行命令</p> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>root@vm003:~<span class="token comment"># fdisk /dev/sda</span>
+
+Welcome to <span class="token function">fdisk</span> <span class="token punctuation">(</span>util-linux <span class="token number">2.27</span>.1<span class="token punctuation">)</span>.
+Changes will remain <span class="token keyword">in</span> memory only, <span class="token keyword">until</span> you decide to <span class="token function">write</span> them.
+Be careful before using the <span class="token function">write</span> command.
+
+
+Command <span class="token punctuation">(</span>m <span class="token keyword">for</span> <span class="token builtin class-name">help</span><span class="token punctuation">)</span>: p <span class="token comment"># 查看现在的分区情况</span>
+Disk /dev/sda: <span class="token number">300</span> GiB, <span class="token number">322122547200</span> bytes, <span class="token number">629145600</span> sectors
+Units: sectors of <span class="token number">1</span> * <span class="token number">512</span> <span class="token operator">=</span> <span class="token number">512</span> bytes
+Sector size <span class="token punctuation">(</span>logical/physical<span class="token punctuation">)</span>: <span class="token number">512</span> bytes / <span class="token number">4096</span> bytes
+I/O size <span class="token punctuation">(</span>minimum/optimal<span class="token punctuation">)</span>: <span class="token number">4096</span> bytes / <span class="token number">4096</span> bytes
+Disklabel type: dos
+Disk identifier: 0xa88f1366
+
+Device     Boot   Start       End   Sectors   Size Id Type
+/dev/sda1  *       <span class="token number">2048</span>    <span class="token number">999423</span>    <span class="token number">997376</span>   487M <span class="token number">83</span> Linux
+/dev/sda2       <span class="token number">1001470</span> <span class="token number">629145599</span> <span class="token number">628144130</span> <span class="token number">299</span>.5G  <span class="token number">5</span> Extended
+/dev/sda5       <span class="token number">1001472</span> <span class="token number">209713151</span> <span class="token number">208711680</span>  <span class="token number">99</span>.5G 8e Linux LVM
+
+Partition <span class="token number">2</span> does not start on physical sector boundary.
+
+Command <span class="token punctuation">(</span>m <span class="token keyword">for</span> <span class="token builtin class-name">help</span><span class="token punctuation">)</span>: n <span class="token comment"># 新增分区，选择逻辑分区，起止点看情况输入，默认值是填充满整个磁盘</span>
+
+All space <span class="token keyword">for</span> primary partitions is <span class="token keyword">in</span> use.
+Adding logical partition <span class="token number">6</span>
+First sector <span class="token punctuation">(</span><span class="token number">209715200</span>-629145599, default <span class="token number">209715200</span><span class="token punctuation">)</span>:
+Last sector, +sectors or +size<span class="token punctuation">{</span>K,M,G,T,P<span class="token punctuation">}</span> <span class="token punctuation">(</span><span class="token number">209715200</span>-629145599, default <span class="token number">629145599</span><span class="token punctuation">)</span>:
+
+Created a new partition <span class="token number">6</span> of <span class="token builtin class-name">type</span> <span class="token string">'Linux'</span> and of size <span class="token number">200</span> GiB.
+
+Command <span class="token punctuation">(</span>m <span class="token keyword">for</span> <span class="token builtin class-name">help</span><span class="token punctuation">)</span>: p <span class="token comment"># 查看新增的分区</span>
+Disk /dev/sda: <span class="token number">300</span> GiB, <span class="token number">322122547200</span> bytes, <span class="token number">629145600</span> sectors
+Units: sectors of <span class="token number">1</span> * <span class="token number">512</span> <span class="token operator">=</span> <span class="token number">512</span> bytes
+Sector size <span class="token punctuation">(</span>logical/physical<span class="token punctuation">)</span>: <span class="token number">512</span> bytes / <span class="token number">4096</span> bytes
+I/O size <span class="token punctuation">(</span>minimum/optimal<span class="token punctuation">)</span>: <span class="token number">4096</span> bytes / <span class="token number">4096</span> bytes
+Disklabel type: dos
+Disk identifier: 0xa88f1366
+
+Device     Boot     Start       End   Sectors   Size Id Type
+/dev/sda1  *         <span class="token number">2048</span>    <span class="token number">999423</span>    <span class="token number">997376</span>   487M <span class="token number">83</span> Linux
+/dev/sda2         <span class="token number">1001470</span> <span class="token number">629145599</span> <span class="token number">628144130</span> <span class="token number">299</span>.5G  <span class="token number">5</span> Extended
+/dev/sda5         <span class="token number">1001472</span> <span class="token number">209713151</span> <span class="token number">208711680</span>  <span class="token number">99</span>.5G 8e Linux LVM
+/dev/sda6       <span class="token number">209715200</span> <span class="token number">629145599</span> <span class="token number">419430400</span>   200G <span class="token number">83</span> Linux
+
+Partition <span class="token number">2</span> does not start on physical sector boundary.
+
+Command <span class="token punctuation">(</span>m <span class="token keyword">for</span> <span class="token builtin class-name">help</span><span class="token punctuation">)</span>: t <span class="token comment"># 改变分区类型为 Linux LVM</span>
+Partition number <span class="token punctuation">(</span><span class="token number">1,2</span>,5,6, default <span class="token number">6</span><span class="token punctuation">)</span>: <span class="token number">6</span> <span class="token comment"># sda6</span>
+Partition <span class="token builtin class-name">type</span> <span class="token punctuation">(</span>type L to list all types<span class="token punctuation">)</span>: 8e <span class="token comment"># LVM 类型的 Id 代码</span>
+
+Changed <span class="token builtin class-name">type</span> of partition <span class="token string">'Linux'</span> to <span class="token string">'Linux LVM'</span><span class="token builtin class-name">.</span>
+
+Command <span class="token punctuation">(</span>m <span class="token keyword">for</span> <span class="token builtin class-name">help</span><span class="token punctuation">)</span>: p <span class="token comment"># 再次查看分区情况</span>
+Disk /dev/sda: <span class="token number">300</span> GiB, <span class="token number">322122547200</span> bytes, <span class="token number">629145600</span> sectors
+Units: sectors of <span class="token number">1</span> * <span class="token number">512</span> <span class="token operator">=</span> <span class="token number">512</span> bytes
+Sector size <span class="token punctuation">(</span>logical/physical<span class="token punctuation">)</span>: <span class="token number">512</span> bytes / <span class="token number">4096</span> bytes
+I/O size <span class="token punctuation">(</span>minimum/optimal<span class="token punctuation">)</span>: <span class="token number">4096</span> bytes / <span class="token number">4096</span> bytes
+Disklabel type: dos
+Disk identifier: 0xa88f1366
+
+Device     Boot     Start       End   Sectors   Size Id Type
+/dev/sda1  *         <span class="token number">2048</span>    <span class="token number">999423</span>    <span class="token number">997376</span>   487M <span class="token number">83</span> Linux
+/dev/sda2         <span class="token number">1001470</span> <span class="token number">629145599</span> <span class="token number">628144130</span> <span class="token number">299</span>.5G  <span class="token number">5</span> Extended
+/dev/sda5         <span class="token number">1001472</span> <span class="token number">209713151</span> <span class="token number">208711680</span>  <span class="token number">99</span>.5G 8e Linux LVM
+/dev/sda6       <span class="token number">209715200</span> <span class="token number">629145599</span> <span class="token number">419430400</span>   200G 8e Linux LVM
+
+Partition <span class="token number">2</span> does not start on physical sector boundary.
+
+Command <span class="token punctuation">(</span>m <span class="token keyword">for</span> <span class="token builtin class-name">help</span><span class="token punctuation">)</span>: wq <span class="token comment"># 确认没有问题，保存退出</span>
+
+The partition table has been altered.
+Calling ioctl<span class="token punctuation">(</span><span class="token punctuation">)</span> to re-read partition table.
+Re-reading the partition table failed.: Device or resource busy
+
+The kernel still uses the old table. The new table will be used at the next <span class="token function">reboot</span> or after you run partprobe<span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">)</span> or kpartx<span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">)</span>.
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br><span class="line-number">20</span><br><span class="line-number">21</span><br><span class="line-number">22</span><br><span class="line-number">23</span><br><span class="line-number">24</span><br><span class="line-number">25</span><br><span class="line-number">26</span><br><span class="line-number">27</span><br><span class="line-number">28</span><br><span class="line-number">29</span><br><span class="line-number">30</span><br><span class="line-number">31</span><br><span class="line-number">32</span><br><span class="line-number">33</span><br><span class="line-number">34</span><br><span class="line-number">35</span><br><span class="line-number">36</span><br><span class="line-number">37</span><br><span class="line-number">38</span><br><span class="line-number">39</span><br><span class="line-number">40</span><br><span class="line-number">41</span><br><span class="line-number">42</span><br><span class="line-number">43</span><br><span class="line-number">44</span><br><span class="line-number">45</span><br><span class="line-number">46</span><br><span class="line-number">47</span><br><span class="line-number">48</span><br><span class="line-number">49</span><br><span class="line-number">50</span><br><span class="line-number">51</span><br><span class="line-number">52</span><br><span class="line-number">53</span><br><span class="line-number">54</span><br><span class="line-number">55</span><br><span class="line-number">56</span><br><span class="line-number">57</span><br><span class="line-number">58</span><br><span class="line-number">59</span><br><span class="line-number">60</span><br><span class="line-number">61</span><br><span class="line-number">62</span><br><span class="line-number">63</span><br><span class="line-number">64</span><br><span class="line-number">65</span><br><span class="line-number">66</span><br><span class="line-number">67</span><br><span class="line-number">68</span><br><span class="line-number">69</span><br><span class="line-number">70</span><br><span class="line-number">71</span><br><span class="line-number">72</span><br><span class="line-number">73</span><br><span class="line-number">74</span><br><span class="line-number">75</span><br><span class="line-number">76</span><br></div></div><h2 id="新分区合并到相应-volumn-group"><a href="#新分区合并到相应-volumn-group" class="header-anchor">#</a> 新分区合并到相应 Volumn Group</h2> <p>运行命令</p> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>root@vm003:~<span class="token comment"># vgdisplay</span>
+  --- Volume group ---
+  VG Name               Ubuntu
+  System ID
+  Format                lvm2
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br></div></div><p>可以看出我们要操作的VG Name 为 <strong>Ubuntu</strong>，记录下来。<br>
+接着运行命令</p> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>root@vm003:~<span class="token comment"># vgextend Ubuntu /dev/sda6 # /dev/sda6 是刚刚增加的 LVM 分区</span>
+  Device /dev/sda6 not found <span class="token punctuation">(</span>or ignored by filtering<span class="token punctuation">)</span>.
+  Unable to <span class="token function">add</span> physical volume <span class="token string">'/dev/sda6'</span> to volume group <span class="token string">'Ubuntu'</span><span class="token builtin class-name">.</span>
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br></div></div><p>呃，，，提示没有找到 <em>/dev/sda6</em> 这个设备，还是重启一下好了。</p> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>root@vm003:~<span class="token comment"># reboot</span>
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br></div></div><p>重启后再次执行</p> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>root@vm003:~<span class="token comment"># vgextend Ubuntu /dev/sda6 # /dev/sda6 是刚刚增加的 LVM 分区</span>
+  Physical volume <span class="token string">&quot;/dev/sda6&quot;</span> successfully created
+  Volume group <span class="token string">&quot;Ubuntu&quot;</span> successfully extended
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br></div></div><p>再查看一下 Volumn Group 的状态，运行命令</p> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>root@vm003:~<span class="token comment"># vgs</span>
+  VG     <span class="token comment">#PV #LV #SN Attr   VSize   VFree</span>
+  Ubuntu   <span class="token number">2</span>   <span class="token number">2</span>   <span class="token number">0</span> wz--n- <span class="token number">299</span>.52g <span class="token number">200</span>.00g
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br></div></div><p>确实加进去了。<br>
+然后运行</p> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>root@vm003:~<span class="token comment"># lvdisplay</span>
+  --- Logical volume ---
+  LV Path                /dev/Ubuntu/root
+  LV Name                root
+  VG Name                Ubuntu
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br></div></div><p>我们知道了 <em>Ubuntu</em> VG 的 LV Path 是 <strong>/dev/Ubuntu/root</strong>，记录下来。<br>
+然后运行</p> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>root@vm003:~<span class="token comment"># lvresize -l +100%FREE /dev/Ubuntu/root # /dev/Ubuntu/root 是 LV Path</span>
+  Size of logical volume Ubuntu/root changed from <span class="token number">95.52</span> GiB <span class="token punctuation">(</span><span class="token number">24453</span> extents<span class="token punctuation">)</span> to <span class="token number">295.52</span> GiB <span class="token punctuation">(</span><span class="token number">75652</span> extents<span class="token punctuation">)</span>.
+  Logical volume root successfully resized.
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br></div></div><p>这就成功啦。</p> <blockquote><p>警告： 如果操作时出现下面这样的 warning，就说明现在 logic volumn 的总大小还不对，resize 不但不增加空间，反而在缩小空间，如果继续操作下去，必将丢失数据。应立即停止！按 n 取消。</p></blockquote> <blockquote><p>WARNING: Reducing active and open logical volume to 32.00 MiB<br>
+THIS MAY DESTROY YOUR DATA (filesystem etc.)<br>
+Do you really want to reduce root? [y/n]*</p></blockquote> <h2 id="更新文件系统"><a href="#更新文件系统" class="header-anchor">#</a> 更新文件系统</h2> <p>最后一步，运行命令</p> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>root@vm003:~<span class="token comment"># resize2fs -p /dev/mapper/Ubuntu-root # /dev/mapper/Ubuntu-root 是从 df 命令看到的文件系统信息</span>
+resize2fs <span class="token number">1.42</span>.13 <span class="token punctuation">(</span><span class="token number">17</span>-May-2015<span class="token punctuation">)</span>
+Filesystem at /dev/mapper/Ubuntu-root is mounted on /<span class="token punctuation">;</span> on-line resizing required
+old_desc_blocks <span class="token operator">=</span> <span class="token number">6</span>, new_desc_blocks <span class="token operator">=</span> <span class="token number">19</span>
+
+The filesystem on /dev/mapper/Ubuntu-root is now <span class="token number">77467648</span> <span class="token punctuation">(</span>4k<span class="token punctuation">)</span> blocks long.
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br></div></div><p>这个过程可能会花几分钟时间，耐心等待就好了。<br>
+然后运行 df 命令查看磁盘使用</p> <div class="language-bash line-numbers-mode"><pre class="language-bash"><code>root@vm003:~<span class="token comment"># df -h</span>
+Filesystem               Size  Used Avail Use% Mounted on
+udev                     <span class="token number">3</span>.9G     <span class="token number">0</span>  <span class="token number">3</span>.9G   <span class="token number">0</span>% /dev
+tmpfs                    798M  <span class="token number">8</span>.6M  789M   <span class="token number">2</span>% /run
+/dev/mapper/Ubuntu-root  291G   88G  191G  <span class="token number">32</span>% /
+tmpfs                    <span class="token number">3</span>.9G     <span class="token number">0</span>  <span class="token number">3</span>.9G   <span class="token number">0</span>% /dev/shm
+tmpfs                    <span class="token number">5</span>.0M     <span class="token number">0</span>  <span class="token number">5</span>.0M   <span class="token number">0</span>% /run/lock
+tmpfs                    <span class="token number">3</span>.9G     <span class="token number">0</span>  <span class="token number">3</span>.9G   <span class="token number">0</span>% /sys/fs/cgroup
+/dev/sda1                472M  382M   66M  <span class="token number">86</span>% /boot
+tmpfs                    100K     <span class="token number">0</span>  100K   <span class="token number">0</span>% /run/lxcfs/controllers
+tmpfs                    798M     <span class="token number">0</span>  798M   <span class="token number">0</span>% /run/user/0
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br></div></div><p>大功告成！</p> <h2 id="参考"><a href="#参考" class="header-anchor">#</a> 参考</h2> <p><a href="http://luqitao.github.io/2015/12/08/Resize-Image-Rootpartition/" target="_blank" rel="noopener noreferrer">http://luqitao.github.io/2015/12/08/Resize-Image-Rootpartition/<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></p></div> <footer><!----> <hr> <!----></footer></article> <div class="sticker vuepress-toc"><div class="vuepress-toc-item vuepress-toc-h2 active"><a href="#步骤概览" title="步骤概览">步骤概览</a></div><div class="vuepress-toc-item vuepress-toc-h2"><a href="#确定要操作的磁盘" title="确定要操作的磁盘">确定要操作的磁盘</a></div><div class="vuepress-toc-item vuepress-toc-h2"><a href="#新分区合并到相应-volumn-group" title="新分区合并到相应 Volumn Group">新分区合并到相应 Volumn Group</a></div><div class="vuepress-toc-item vuepress-toc-h2"><a href="#更新文件系统" title="更新文件系统">更新文件系统</a></div><div class="vuepress-toc-item vuepress-toc-h2"><a href="#参考" title="参考">参考</a></div></div></div></div> <footer class="footer" data-v-3d9deeb8><div class="footer-left-wrap" data-v-3d9deeb8><ul class="contact" data-v-3d9deeb8><li class="contact-item" data-v-3d9deeb8><a href="https://github.com/purocean/blog" target="_blank" rel="noopener noreferrer" class="nav-link external" data-v-3d9deeb8><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github" data-v-3d9deeb8><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" data-v-3d9deeb8></path></svg>
+          
+        </a></li></ul></div> <div class="footer-right-wrap" data-v-3d9deeb8><ul class="copyright" data-v-3d9deeb8><li class="copyright-item" data-v-3d9deeb8>Powered by VuePress | Copyright © 2019-present</li><li class="copyright-item" data-v-3d9deeb8><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" class="nav-link external" data-v-3d9deeb8>蜀ICP备2023032883号-1</a></li></ul></div></footer></div><div class="global-ui"><!----></div></div>
+    <script src="/assets/js/app.eb9f9003.js" defer></script><script src="/assets/js/4.a919a368.js" defer></script><script src="/assets/js/1.b0bbcc77.js" defer></script><script src="/assets/js/42.b92ed718.js" defer></script>
+  </body>
+</html>

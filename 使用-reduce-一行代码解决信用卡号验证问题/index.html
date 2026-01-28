@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>使用 reduce 一行代码解决信用卡号验证问题 | 洋子的自留地</title>
+    <meta name="generator" content="VuePress 1.9.10">
+    <link rel="alternate" type="application/rss+xml" href="https://purocean.github.io/rss.xml" title="洋子的自留地 RSS Feed">
+    <meta name="description" content="
+女票 JAVA 课程有一道作业题，验证信用卡号是否合法。
+&gt;实验作业longer 9月30号 星期五 12:09
+实验1:验证信用卡号码
+Lab Project: Validating Credit Cards
+ Problem Description:
+Credit card numbers follow certain patterns. A credit card number must ...">
+    
+    <link rel="preload" href="/assets/css/0.styles.5ee86e3d.css" as="style"><link rel="preload" href="/assets/js/app.eb9f9003.js" as="script"><link rel="preload" href="/assets/js/4.a919a368.js" as="script"><link rel="preload" href="/assets/js/1.b0bbcc77.js" as="script"><link rel="preload" href="/assets/js/34.5a0d2a6b.js" as="script"><link rel="prefetch" href="/assets/js/11.8d29bb1f.js"><link rel="prefetch" href="/assets/js/12.ebc662de.js"><link rel="prefetch" href="/assets/js/13.ed891f49.js"><link rel="prefetch" href="/assets/js/14.9d2f201d.js"><link rel="prefetch" href="/assets/js/15.54f4a3d9.js"><link rel="prefetch" href="/assets/js/16.846050e5.js"><link rel="prefetch" href="/assets/js/17.c6a2bbc8.js"><link rel="prefetch" href="/assets/js/18.66fb8bc7.js"><link rel="prefetch" href="/assets/js/19.a70e5f6f.js"><link rel="prefetch" href="/assets/js/2.d9736519.js"><link rel="prefetch" href="/assets/js/20.d5dd728f.js"><link rel="prefetch" href="/assets/js/21.3f30521e.js"><link rel="prefetch" href="/assets/js/22.66343f4a.js"><link rel="prefetch" href="/assets/js/23.c176132e.js"><link rel="prefetch" href="/assets/js/24.69166df7.js"><link rel="prefetch" href="/assets/js/25.b5c2c5f1.js"><link rel="prefetch" href="/assets/js/26.a3e36f84.js"><link rel="prefetch" href="/assets/js/27.8ad76597.js"><link rel="prefetch" href="/assets/js/28.2b42ab80.js"><link rel="prefetch" href="/assets/js/29.efaefbb5.js"><link rel="prefetch" href="/assets/js/3.605ef2e9.js"><link rel="prefetch" href="/assets/js/30.955ad667.js"><link rel="prefetch" href="/assets/js/31.064ef281.js"><link rel="prefetch" href="/assets/js/32.5f88d44e.js"><link rel="prefetch" href="/assets/js/33.2fc19e88.js"><link rel="prefetch" href="/assets/js/35.1b99631d.js"><link rel="prefetch" href="/assets/js/36.c1fb9a25.js"><link rel="prefetch" href="/assets/js/37.7643d68e.js"><link rel="prefetch" href="/assets/js/38.9c71544d.js"><link rel="prefetch" href="/assets/js/39.9b77b86d.js"><link rel="prefetch" href="/assets/js/40.5770bcf5.js"><link rel="prefetch" href="/assets/js/41.04fc2396.js"><link rel="prefetch" href="/assets/js/42.b92ed718.js"><link rel="prefetch" href="/assets/js/43.93eeb3e4.js"><link rel="prefetch" href="/assets/js/44.6a23f7e7.js"><link rel="prefetch" href="/assets/js/45.b78c673a.js"><link rel="prefetch" href="/assets/js/46.35027471.js"><link rel="prefetch" href="/assets/js/47.0838f5cd.js"><link rel="prefetch" href="/assets/js/48.2ae7bad5.js"><link rel="prefetch" href="/assets/js/49.23d9b4d7.js"><link rel="prefetch" href="/assets/js/5.1f904404.js"><link rel="prefetch" href="/assets/js/50.10ec8c3f.js"><link rel="prefetch" href="/assets/js/51.415c8ea0.js"><link rel="prefetch" href="/assets/js/52.0a86f5b4.js"><link rel="prefetch" href="/assets/js/53.4d1c72cb.js"><link rel="prefetch" href="/assets/js/54.1af5a13e.js"><link rel="prefetch" href="/assets/js/55.27d5b373.js"><link rel="prefetch" href="/assets/js/6.1aed2db1.js"><link rel="prefetch" href="/assets/js/7.efa58335.js"><link rel="prefetch" href="/assets/js/8.0c59f90a.js"><link rel="prefetch" href="/assets/js/vuejs-paginate.2352b21b.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.5ee86e3d.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div id="vuepress-theme-blog__global-layout"><section id="header-wrapper"><header id="header"><div class="header-wrapper"><div class="title"><a href="/" class="nav-link home-link">洋子的自留地 </a></div> <div class="header-right-wrap"><ul class="nav"><li class="nav-item"><a href="/" class="nav-link">首页</a></li><li class="nav-item"><a href="/tag/" class="nav-link">标签</a></li></ul> <div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <a href="/rss.xml" class="feed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a></div></div></header></section> <div id="mobile-header"><div class="mobile-header-bar"><div class="mobile-header-title"><a href="/" class="nav-link mobile-home-link">洋子的自留地 </a> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-menu"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></div> <div class="mobile-menu-wrapper"><hr class="menu-divider"> <ul class="mobile-nav"><li class="mobile-nav-item"><a href="/" class="nav-link">首页</a></li><li class="mobile-nav-item"><a href="/tag/" class="nav-link">标签</a></li> <li class="mobile-nav-item"><a href="/rss.xml" class="feed"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss"><path d="M4 11a9 9 0 0 1 9 9"></path><path d="M4 4a16 16 0 0 1 16 16"></path><circle cx="5" cy="19" r="1"></circle></svg></a></li></ul></div></div></div> <div class="content-wrapper"><div id="vuepress-theme-blog__post-layout"><article itemscope="itemscope" itemtype="https://schema.org/BlogPosting" class="vuepress-blog-theme-content"><header><h1 itemprop="name headline" class="post-title">
+        使用 reduce 一行代码解决信用卡号验证问题
+      </h1> <div class="post-meta"><div itemprop="publisher author" itemtype="http://schema.org/Person" itemscope="itemscope" class="post-meta-author"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-navigation"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg> <span itemprop="name">洋子</span> <!----></div> <div class="post-meta-date"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> <time pubdate itemprop="datePublished" datetime="2016-10-10T00:00:00.000Z">
+      2016-10-10
+    </time></div> <ul itemprop="keywords" class="post-meta-tags"><li class="post-tag" data-v-42ccfcd5><a href="/tag/前端" data-v-42ccfcd5><span data-v-42ccfcd5>前端</span></a></li></ul></div></header> <div itemprop="articleBody" class="content__default"><h2 id="背景"><a href="#背景" class="header-anchor">#</a> 背景</h2> <p>女票 JAVA 课程有一道作业题，验证信用卡号是否合法。</p> <blockquote><p>实验作业longer 9月30号 星期五 12:09<br>
+实验1:验证信用卡号码<br>
+Lab Project: Validating Credit Cards<br>
+ Problem Description:<br>
+Credit card numbers follow certain patterns. A credit card number must have between 13 and 16 digits. It must start with:<br>
+4 for Visa cards<br>
+5 for Master cards<br>
+37 for American Express cards<br>
+6 for Discover cards<br>
+In 1954, Hans Luhn of IBM proposed an algorithm for validating credit card numbers. The algorithm is useful to determine if a card number is entered correctly or if a credit card is scanned correctly by a scanner. Almost all credit card numbers are generated following this validity check, commonly known as the Luhn check or the Mod 10 check, which can be described as follows (for illustration, consider the card number 4388576018402626):<br>
+1. Double every second digit from right to left. If doubling of a digit results in a two-digit number, add up the two digits to get a single-digit number.<br>
+2 * 2 = 4<br>
+2 * 2 = 4<br>
+4 * 2 = 8<br>
+1 * 2 = 2<br>
+6 * 2 = 12 (1 + 2 = 3)<br>
+5 * 2 = 10 (1 + 0 = 1)<br>
+8 * 2 = 16 (1 + 6 = 7)<br>
+4 * 2 = 8<br>
+2. Now add all single-digit numbers from Step 1. <br>
+4 + 4 + 8 + 2 + 3 + 1 + 7 + 8 = 37<br>
+3. Add all digits in the odd places from right to left in the card number.<br>
+   6 + 6 + 0 + 8 + 0 + 7 + 8 + 3 = 38<br>
+4. Sum the results from Step 2 and Step 3.<br>
+37 + 38 = 75<br>
+5. If the result from Step 4 is divisible by 10, the card number is valid; otherwise, it is invalid. For example, the number 4388576018402626 is invalid, but the number 4388576018410707 is valid.<br>
+Write a program that prompts the user to enter a credit card number as a long integer. Display whether the number is valid or invalid.</p></blockquote> <p>两个测试用例</p> <div class="language- line-numbers-mode"><pre class="language-text"><code>不合法卡号:
+4388576018402626
+合法卡号:
+4388576018410707
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br></div></div><h2 id="java-实现"><a href="#java-实现" class="header-anchor">#</a> JAVA 实现</h2> <p>既然是作业，先用 JAVA 写了。我 JAVA 也不是太熟，就这样。</p> <div class="language- line-numbers-mode"><pre class="language-text"><code>import java.util.*;
+
+public class Validating {
+    public static void main(String[] args) {
+        while (!xiaomiaomiao()) {
+            System.out.println(&quot;The number you input is invalid. Please try again.&quot;);
+        }
+
+        System.out.println(&quot;The number you input is valid.&quot;);
+    }
+
+    public static boolean xiaomiaomiao() {
+        System.out.println(&quot;Input your card number:&quot;);
+        String numStr = (new Scanner(System.in)).next();
+
+        int count = 0;
+        int sum = 0;
+        for (int i = numStr.length() - 1; i &gt;= 0; --i) {
+            // 判断字符合法
+            int ascii = (int) numStr.charAt(i);
+            if (ascii &lt; 48 || 57 &lt; ascii) {
+                System.out.println(&quot;Input must be numeric.&quot;);
+                return false;
+            }
+
+            // 求和
+            int num = ascii - 48;
+            if ((numStr.length() - i) % 2 == 0) {
+                int tmp = num * 2;
+                sum += tmp &gt; 9 ? tmp - 9 : tmp;
+            } else {
+                sum += num;
+            }
+
+            ++count;
+        }
+
+        if (count &lt; 13 || 16 &lt; count) {
+            System.out.println(&quot;13 ~ 16.&quot;);
+
+            return false;
+        }
+
+        return (sum % 10 == 0);
+    }
+}
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br><span class="line-number">20</span><br><span class="line-number">21</span><br><span class="line-number">22</span><br><span class="line-number">23</span><br><span class="line-number">24</span><br><span class="line-number">25</span><br><span class="line-number">26</span><br><span class="line-number">27</span><br><span class="line-number">28</span><br><span class="line-number">29</span><br><span class="line-number">30</span><br><span class="line-number">31</span><br><span class="line-number">32</span><br><span class="line-number">33</span><br><span class="line-number">34</span><br><span class="line-number">35</span><br><span class="line-number">36</span><br><span class="line-number">37</span><br><span class="line-number">38</span><br><span class="line-number">39</span><br><span class="line-number">40</span><br><span class="line-number">41</span><br><span class="line-number">42</span><br><span class="line-number">43</span><br><span class="line-number">44</span><br><span class="line-number">45</span><br><span class="line-number">46</span><br></div></div><h2 id="使用-javascript-的-reduce-实现"><a href="#使用-javascript-的-reduce-实现" class="header-anchor">#</a> 使用 Javascript 的 reduce 实现</h2> <p>先上一张图<br> <img alt="" data-src="/assets/img/61d072e6.61d072e6.png" loading="lazy" class="lazy"><br>
+很形象的描述了 Reduce 的作用是吧。<br>
+然后代码实现，一句话解决（未校验号码长度）</p> <div class="language- line-numbers-mode"><pre class="language-text"><code>[...'4388576018410707'].reduceRight((previousValue, currentValue, index, array) =&gt; {if ((array.length-index) % 2) {return previousValue - -currentValue} else {return previousValue - -(currentValue*2 &gt; 9 ? currentValue*2-9 : currentValue*2)} }) % 10 ? '验证失败' : '验证成功'
+&quot;验证成功&quot;
+[...'4388576018402626'].reduceRight((previousValue, currentValue, index, array) =&gt; {if ((array.length-index) % 2) {return previousValue - -currentValue} else {return previousValue - -(currentValue*2 &gt; 9 ? currentValue*2-9 : currentValue*2)} }) % 10 ? '验证失败' : '验证成功'
+&quot;验证失败&quot;
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br></div></div><p><img alt="" data-src="/assets/img/5959a679.5959a679.png" loading="lazy" class="lazy"></p> <h2 id="参考"><a href="#参考" class="header-anchor">#</a> 参考</h2> <ol><li><a href="http://es6.ruanyifeng.com/?search=reduce&amp;x=0&amp;y=0#docs/destructuring" target="_blank" rel="noopener noreferrer">http://es6.ruanyifeng.com/?search=reduce&amp;x=0&amp;y=0#docs/destructuring<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li> <li><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/reduceRight" target="_blank" rel="noopener noreferrer">https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array/reduceRight<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li></ol></div> <footer><!----> <hr> <!----></footer></article> <div class="sticker vuepress-toc"><div class="vuepress-toc-item vuepress-toc-h2 active"><a href="#背景" title="背景">背景</a></div><div class="vuepress-toc-item vuepress-toc-h2"><a href="#java-实现" title="JAVA 实现">JAVA 实现</a></div><div class="vuepress-toc-item vuepress-toc-h2"><a href="#使用-javascript-的-reduce-实现" title="使用 Javascript 的 reduce 实现">使用 Javascript 的 reduce 实现</a></div><div class="vuepress-toc-item vuepress-toc-h2"><a href="#参考" title="参考">参考</a></div></div></div></div> <footer class="footer" data-v-3d9deeb8><div class="footer-left-wrap" data-v-3d9deeb8><ul class="contact" data-v-3d9deeb8><li class="contact-item" data-v-3d9deeb8><a href="https://github.com/purocean/blog" target="_blank" rel="noopener noreferrer" class="nav-link external" data-v-3d9deeb8><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github" data-v-3d9deeb8><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" data-v-3d9deeb8></path></svg>
+          
+        </a></li></ul></div> <div class="footer-right-wrap" data-v-3d9deeb8><ul class="copyright" data-v-3d9deeb8><li class="copyright-item" data-v-3d9deeb8>Powered by VuePress | Copyright © 2019-present</li><li class="copyright-item" data-v-3d9deeb8><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" class="nav-link external" data-v-3d9deeb8>蜀ICP备2023032883号-1</a></li></ul></div></footer></div><div class="global-ui"><!----></div></div>
+    <script src="/assets/js/app.eb9f9003.js" defer></script><script src="/assets/js/4.a919a368.js" defer></script><script src="/assets/js/1.b0bbcc77.js" defer></script><script src="/assets/js/34.5a0d2a6b.js" defer></script>
+  </body>
+</html>
